@@ -1,26 +1,48 @@
-# Zepp Health Viewer 🏃‍♂️💤
+# Zepp Health Analytics 🏃‍♂️💤📊
 
-A modern, intuitive dashboard to visualize your health data exported from the Zepp app. Built with Next.js 15, TypeScript, and TailwindCSS.
+A comprehensive health analytics dashboard for visualizing Zepp app exports. Built with Next.js 15, featuring expert-level statistics, trend analysis, and AI-powered insights.
 
-![Dashboard Preview](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=nextdotjs)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=nextdotjs)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-cyan?style=flat-square&logo=tailwindcss)
 
 ## ✨ Features
 
-- **📊 Activity Tracking** - View steps, distance, and calories trends over time
-- **😴 Sleep Analysis** - Visualize sleep stages (Deep, Light, REM) with beautiful stacked charts
-- **⚖️ Body Composition** - Track weight and BMI changes
-- **🏋️ Workout Stats** - See your sport/workout history
-- **🤖 AI Health Assistant** - Chat with an AI powered by OpenRouter to get insights about your health data
+### 📈 Expert Analytics
+- **Percentile Distribution** - P25, P50, P75, P90, P95 for benchmarking
+- **Trend Analysis** - 7-day and 30-day trends with percentage changes
+- **Consistency Scores** - Coefficient of variation analysis
+- **Weekly Patterns** - Day-of-week performance analysis
+- **Monthly Progression** - Long-term tracking over 12 months
+
+### 🏃 Activity Tracking
+- Steps, distance, and calories with daily averages
+- Best/worst day records and streak tracking
+- Distribution analysis (days >10k, >5k, <2k steps)
+
+### 😴 Sleep Analysis
+- **Sleep Architecture** - Deep, Light, REM sleep percentages with pie chart
+- **Sleep Efficiency** - Time asleep vs time in bed
+- **Sleep Debt** - Comparison against recommended hours
+- **Bedtime/Wake Patterns** - Average sleep schedule
+
+### ⚖️ Body Composition
+- Weight journey with start/current comparison
+- BMI classification with visual gauge
+- Body fat, muscle rate, metabolism (if available)
+- Rate of change (kg/week)
+
+### 🤖 AI Health Assistant
+- Chat with AI about your health data
+- Powered by OpenRouter
+- Context-aware insights from your data
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
 - Node.js 18+
-- npm or yarn
 - Zepp data export (CSV files)
+- OpenRouter API key
 
 ### Installation
 
@@ -32,7 +54,7 @@ cd zepp-viewer
 # Install dependencies
 npm install
 
-# Set up your environment variables
+# Set up environment variables
 cp .env.example .env
 # Edit .env with your OpenRouter API key
 
@@ -40,50 +62,57 @@ cp .env.example .env
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
+Open [http://localhost:3000](http://localhost:3000)
 
 ### Data Setup
 
-1. Export your data from the Zepp app (Settings → Account → Export Data)
-2. Extract the ZIP file contents to the `personal_data/` folder
+1. Export data from Zepp app (Settings → Account → Export Data)
+2. Extract ZIP contents to `personal_data/` folder
 3. Restart the development server
-
-## 🔧 Environment Variables
-
-Create a `.env` file with:
-
-```env
-OPENROUTER_API_KEY=your_api_key_here
-MODEL_ID=xiaomi/mimo-v2-flash:free
-```
-
-Get your OpenRouter API key at [openrouter.ai](https://openrouter.ai)
 
 ## 📁 Project Structure
 
 ```
 zepp-viewer/
 ├── personal_data/          # Your exported Zepp data (gitignored)
-│   ├── ACTIVITY/          
-│   ├── SLEEP/             
-│   ├── HEARTRATE_AUTO/    
-│   ├── SPORT/             
-│   ├── BODY/              
-│   └── USER/              
+│   ├── ACTIVITY/           # Steps, distance, calories
+│   ├── SLEEP/              # Sleep stages, duration
+│   ├── HEARTRATE_AUTO/     # Heart rate readings
+│   ├── SPORT/              # Workout sessions
+│   ├── BODY/               # Weight, BMI, body composition
+│   └── USER/               # Profile information
 ├── src/
-│   ├── app/               # Next.js App Router pages
-│   │   ├── api/          # API routes (chat, data)
-│   │   └── page.tsx      # Main dashboard
-│   ├── components/        # React components
-│   │   ├── charts/       # Recharts visualizations
-│   │   ├── ui/           # Reusable UI components
-│   │   ├── Dashboard.tsx # Main dashboard component
-│   │   └── AIChatPanel.tsx
-│   ├── lib/              # Utilities
-│   │   └── data-loader.ts # CSV parsing functions
-│   └── types/            # TypeScript types
-└── .agent/skills/         # Vercel agent skills
+│   ├── app/
+│   │   ├── api/            # API routes (chat, data)
+│   │   └── page.tsx        # Main dashboard
+│   ├── components/
+│   │   ├── charts/         # Recharts visualizations
+│   │   ├── details/        # Expert analytics panels
+│   │   ├── ui/             # Reusable UI components
+│   │   ├── Dashboard.tsx   # Main dashboard
+│   │   └── AIChatPanel.tsx # AI chat interface
+│   ├── lib/
+│   │   ├── analytics.ts    # Statistical calculations
+│   │   └── data-loader.ts  # CSV parsing
+│   └── types/              # TypeScript definitions
 ```
+
+## 🔧 Environment Variables
+
+```env
+OPENROUTER_API_KEY=your_api_key_here
+MODEL_ID=xiaomi/mimo-v2-flash:free
+```
+
+## 📊 Analytics Explained
+
+| Metric | Description |
+|--------|-------------|
+| **Percentiles** | P50 = median, P75 = top quartile, P90/95 = exceptional days |
+| **Consistency** | 100% = identical daily values, lower = more variability |
+| **Sleep Efficiency** | (Total sleep / Time in bed) × 100 |
+| **Sleep Architecture** | Healthy: 15-20% Deep, 20-25% REM, 50-60% Light |
+| **BMI Categories** | <18.5 Underweight, 18.5-25 Normal, 25-30 Overweight, 30+ Obese |
 
 ## 🛠️ Built With
 
@@ -92,18 +121,11 @@ zepp-viewer/
 - [TailwindCSS 4](https://tailwindcss.com/) - Styling
 - [Recharts](https://recharts.org/) - Chart visualizations
 - [OpenRouter](https://openrouter.ai/) - AI chat integration
-- [Vercel Agent Skills](https://github.com/vercel-labs/agent-skills) - React best practices
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Zepp (formerly Amazfit) for the health tracking app
-- OpenRouter for AI model access
-- Vercel for the excellent React framework
+MIT License - see [LICENSE](LICENSE)
 
 ---
 
-Made with ❤️ for health enthusiasts
+Built with ❤️ for health-conscious data enthusiasts

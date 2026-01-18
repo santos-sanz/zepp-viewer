@@ -1,6 +1,14 @@
 # Personal data - contains sensitive health information
 personal_data/
 
+# Agent skill folders (installed via npx add-skill)
+.agent/
+.codex/
+.cursor/
+.gemini/
+.opencode/
+.windsurf/
+
 # Environment variables
 .env
 .env.local
