@@ -1,6 +1,6 @@
-# Zepp Health Analytics 🏃‍♂️💤📊
+# Zepp Health Analytics 🏃‍♂️💤📊🧘
 
-A comprehensive health analytics dashboard for visualizing Zepp app exports. Built with Next.js 15, featuring expert-level statistics, trend analysis, and AI-powered insights.
+A comprehensive health analytics dashboard for visualizing Zepp app exports. Built with Next.js 15, featuring expert-level statistics, stress analysis, and AI-powered insights.
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=nextdotjs)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
@@ -31,6 +31,14 @@ A comprehensive health analytics dashboard for visualizing Zepp app exports. Bui
 - BMI classification with visual gauge
 - Body fat, muscle rate, metabolism (if available)
 - Rate of change (kg/week)
+
+### 🧘 Stress & HRV Analysis
+- **Stress Score** - Derived from heart rate and HRV (0-100)
+- **HRV Estimation** - SDNN-based heart rate variability proxy
+- **Heart Rate Zones** - Distribution across stress zones (Relaxed to Very High)
+- **Recovery Score** - Sleep HR vs daytime HR comparison
+- **Daily Patterns** - Peak stress and most relaxed hours
+- **Weekly Stress Pattern** - Day-by-day stress levels
 
 ### 🤖 AI Health Assistant
 - Chat with AI about your health data
@@ -77,7 +85,7 @@ zepp-viewer/
 ├── personal_data/          # Your exported Zepp data (gitignored)
 │   ├── ACTIVITY/           # Steps, distance, calories
 │   ├── SLEEP/              # Sleep stages, duration
-│   ├── HEARTRATE_AUTO/     # Heart rate readings
+│   ├── HEARTRATE_AUTO/     # Heart rate readings (for stress analysis)
 │   ├── SPORT/              # Workout sessions
 │   ├── BODY/               # Weight, BMI, body composition
 │   └── USER/               # Profile information
@@ -92,7 +100,8 @@ zepp-viewer/
 │   │   ├── Dashboard.tsx   # Main dashboard
 │   │   └── AIChatPanel.tsx # AI chat interface
 │   ├── lib/
-│   │   ├── analytics.ts    # Statistical calculations
+│   │   ├── analytics.ts    # Activity, Sleep, Body stats
+│   │   ├── stress-analytics.ts # Stress & HRV calculations
 │   │   └── data-loader.ts  # CSV parsing
 │   └── types/              # TypeScript definitions
 ```
@@ -113,6 +122,9 @@ MODEL_ID=xiaomi/mimo-v2-flash:free
 | **Sleep Efficiency** | (Total sleep / Time in bed) × 100 |
 | **Sleep Architecture** | Healthy: 15-20% Deep, 20-25% REM, 50-60% Light |
 | **BMI Categories** | <18.5 Underweight, 18.5-25 Normal, 25-30 Overweight, 30+ Obese |
+| **Stress Score** | 0-25 Low, 25-50 Moderate, 50-75 High, 75+ Very High |
+| **HRV (SDNN)** | <20ms Poor, 20-40 Below Avg, 40-60 Avg, 60-100 Good, 100+ Excellent |
+| **Recovery Score** | Sleep HR should be 15-20+ bpm lower than daytime HR |
 
 ## 🛠️ Built With
 

@@ -9,6 +9,10 @@ import {
   calculateSleepAnalytics,
   calculateBodyAnalytics,
 } from '@/lib/analytics';
+import {
+  loadHeartRateAutoData,
+  calculateStressAnalytics,
+} from '@/lib/stress-analytics';
 import Dashboard from '@/components/Dashboard';
 
 export default function Home() {
@@ -17,11 +21,13 @@ export default function Home() {
   const activity = loadActivityData();
   const sleep = loadSleepData();
   const body = loadBodyData();
+  const heartRate = loadHeartRateAutoData();
 
   // Calculate advanced analytics
   const activityAnalytics = calculateActivityAnalytics(activity);
   const sleepAnalytics = calculateSleepAnalytics(sleep);
   const bodyAnalytics = calculateBodyAnalytics(body);
+  const stressAnalytics = calculateStressAnalytics(heartRate);
 
   return (
     <Dashboard
@@ -32,6 +38,7 @@ export default function Home() {
       activityAnalytics={activityAnalytics}
       sleepAnalytics={sleepAnalytics}
       bodyAnalytics={bodyAnalytics}
+      stressAnalytics={stressAnalytics}
     />
   );
 }

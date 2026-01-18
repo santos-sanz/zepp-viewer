@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import type { ActivityData, SleepData, BodyData, UserData } from '@/types/zepp';
 import type { ActivityAnalytics, SleepAnalytics, BodyAnalytics } from '@/lib/analytics';
+import type { StressAnalytics } from '@/lib/stress-analytics';
 import ActivityChart from '@/components/charts/ActivityChart';
 import SleepChart from '@/components/charts/SleepChart';
 import BodyChart from '@/components/charts/BodyChart';
+import StressChart from '@/components/charts/StressChart';
 import ActivityDetails from '@/components/details/ActivityDetails';
 import SleepDetails from '@/components/details/SleepDetails';
 import BodyDetails from '@/components/details/BodyDetails';
+import StressDetails from '@/components/details/StressDetails';
 import AIChatPanel from '@/components/AIChatPanel';
 
 interface DashboardProps {
@@ -19,9 +22,10 @@ interface DashboardProps {
     activityAnalytics: ActivityAnalytics;
     sleepAnalytics: SleepAnalytics;
     bodyAnalytics: BodyAnalytics;
+    stressAnalytics: StressAnalytics;
 }
 
-type TabType = 'activity' | 'sleep' | 'body';
+type TabType = 'activity' | 'sleep' | 'body' | 'stress';
 
 export default function Dashboard({
     user,
@@ -31,6 +35,7 @@ export default function Dashboard({
     activityAnalytics,
     sleepAnalytics,
     bodyAnalytics,
+    stressAnalytics,
 }: DashboardProps) {
     const [activeTab, setActiveTab] = useState<TabType>('activity');
     const [showDetails, setShowDetails] = useState(true);
@@ -39,7 +44,18 @@ export default function Dashboard({
         { id: 'activity', name: 'Activity', icon: '🏃' },
         { id: 'sleep', name: 'Sleep', icon: '😴' },
         { id: 'body', name: 'Body', icon: '⚖️' },
+        { id: 'stress', name: 'Stress', icon: '🧘' },
     ];
+
+    const getStressColor = (level: string) => {
+        switch (level) {
+            case 'Low': return 'text-green-400';
+            case 'Moderate': return 'text-yellow-400';
+            case 'High': return 'text-orange-400';
+            case 'Very High': return 'text-red-400';
+            default: return 'text-gray-400';
+        }
+    };
 
     return (
         <main className="min-h-screen pb-20">
@@ -62,7 +78,7 @@ export default function Dashboard({
                                 </h1>
                                 {user && (
                                     <p className="text-gray-400 text-sm">
-                                        {user.nickName} • {user.height}cm • Expert View
+                                        {user.nickName} • {user.height}cm • {showDetails ? 'Expert View' : 'Simple View'}
                                     </p>
                                 )}
                             </div>
@@ -80,7 +96,7 @@ export default function Dashboard({
                             <div className="text-right">
                                 <p className="text-gray-400 text-sm">Total Records</p>
                                 <p className="text-white font-semibold">
-                                    {activity.length + sleep.length + body.length}
+                                    {activity.length + sleep.length + body.length + stressAnalytics.totalReadings}
                                 </p>
                             </div>
                         </div>
@@ -90,7 +106,7 @@ export default function Dashboard({
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Quick Stats Row */}
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
                     <div className="bg-gradient-to-br from-purple-600/20 to-purple-900/20 border border-purple-500/30 rounded-xl p-4">
                         <p className="text-purple-300 text-xs uppercase tracking-wide">Avg Steps</p>
                         <p className="text-2xl font-bold text-white">{activityAnalytics.avgDailySteps.toLocaleString()}</p>
@@ -115,6 +131,16 @@ export default function Dashboard({
                         <p className="text-orange-300 text-xs uppercase tracking-wide">Consistency</p>
                         <p className="text-2xl font-bold text-white">{activityAnalytics.consistencyScore}%</p>
                     </div>
+                    <div className="bg-gradient-to-br from-red-600/20 to-red-900/20 border border-red-500/30 rounded-xl p-4">
+                        <p className="text-red-300 text-xs uppercase tracking-wide">Stress</p>
+                        <p className={`text-2xl font-bold ${getStressColor(stressAnalytics.stressLevel)}`}>
+                            {stressAnalytics.avgStressScore}
+                        </p>
+                    </div>
+                    <div className="bg-gradient-to-br from-indigo-600/20 to-indigo-900/20 border border-indigo-500/30 rounded-xl p-4">
+                        <p className="text-indigo-300 text-xs uppercase tracking-wide">Recovery</p>
+                        <p className="text-2xl font-bold text-white">{stressAnalytics.recoveryScore}%</p>
+                    </div>
                 </div>
 
                 {/* Tab Navigation */}
@@ -131,7 +157,10 @@ export default function Dashboard({
                             <span>{tab.icon}</span>
                             <span>{tab.name}</span>
                             <span className="text-xs opacity-70">
-                                ({tab.id === 'activity' ? activity.length : tab.id === 'sleep' ? sleep.length : body.length})
+                                ({tab.id === 'activity' ? activity.length :
+                                    tab.id === 'sleep' ? sleep.length :
+                                        tab.id === 'body' ? body.length :
+                                            `${(stressAnalytics.totalReadings / 1000).toFixed(0)}k`})
                             </span>
                         </button>
                     ))}
@@ -143,11 +172,13 @@ export default function Dashboard({
                         {activeTab === 'activity' && '📊 Activity Trends (Last 30 Days)'}
                         {activeTab === 'sleep' && '💤 Sleep Patterns (Last 30 Days)'}
                         {activeTab === 'body' && '📈 Body Composition Trends'}
+                        {activeTab === 'stress' && '🧘 Heart Rate by Hour of Day'}
                     </h2>
 
                     {activeTab === 'activity' && <ActivityChart data={activity} showCalories />}
                     {activeTab === 'sleep' && <SleepChart data={sleep} />}
                     {activeTab === 'body' && <BodyChart data={body} />}
+                    {activeTab === 'stress' && <StressChart analytics={stressAnalytics} />}
                 </div>
 
                 {/* Expert Details Section */}
@@ -162,6 +193,7 @@ export default function Dashboard({
                         {activeTab === 'activity' && <ActivityDetails analytics={activityAnalytics} />}
                         {activeTab === 'sleep' && <SleepDetails analytics={sleepAnalytics} />}
                         {activeTab === 'body' && <BodyDetails analytics={bodyAnalytics} />}
+                        {activeTab === 'stress' && <StressDetails analytics={stressAnalytics} />}
                     </div>
                 )}
             </div>
