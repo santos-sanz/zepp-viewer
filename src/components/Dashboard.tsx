@@ -12,6 +12,7 @@ import ActivityDetails from '@/components/details/ActivityDetails';
 import SleepDetails from '@/components/details/SleepDetails';
 import BodyDetails from '@/components/details/BodyDetails';
 import StressDetails from '@/components/details/StressDetails';
+import LongTermTrends from '@/components/LongTermTrends';
 import AIChatPanel from '@/components/AIChatPanel';
 
 interface DashboardProps {
@@ -25,7 +26,7 @@ interface DashboardProps {
     stressAnalytics: StressAnalytics;
 }
 
-type TabType = 'activity' | 'sleep' | 'body' | 'stress';
+type TabType = 'activity' | 'sleep' | 'body' | 'stress' | 'trends';
 
 export default function Dashboard({
     user,
@@ -45,6 +46,7 @@ export default function Dashboard({
         { id: 'sleep', name: 'Sleep', icon: '😴' },
         { id: 'body', name: 'Body', icon: '⚖️' },
         { id: 'stress', name: 'Stress', icon: '🧘' },
+        { id: 'trends', name: 'Trends', icon: '📈' },
     ];
 
     const getStressColor = (level: string) => {
@@ -56,6 +58,11 @@ export default function Dashboard({
             default: return 'text-gray-400';
         }
     };
+
+    // Calculate years of data
+    const firstDate = new Date(activity[0]?.date || new Date());
+    const lastDate = new Date(activity[activity.length - 1]?.date || new Date());
+    const yearsOfData = ((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24 * 365)).toFixed(1);
 
     return (
         <main className="min-h-screen pb-20">
@@ -156,45 +163,68 @@ export default function Dashboard({
                         >
                             <span>{tab.icon}</span>
                             <span>{tab.name}</span>
-                            <span className="text-xs opacity-70">
-                                ({tab.id === 'activity' ? activity.length :
-                                    tab.id === 'sleep' ? sleep.length :
-                                        tab.id === 'body' ? body.length :
-                                            `${(stressAnalytics.totalReadings / 1000).toFixed(0)}k`})
-                            </span>
+                            {tab.id !== 'trends' && (
+                                <span className="text-xs opacity-70">
+                                    ({tab.id === 'activity' ? activity.length :
+                                        tab.id === 'sleep' ? sleep.length :
+                                            tab.id === 'body' ? body.length :
+                                                `${(stressAnalytics.totalReadings / 1000).toFixed(0)}k`})
+                                </span>
+                            )}
+                            {tab.id === 'trends' && (
+                                <span className="text-xs opacity-70">({yearsOfData}y)</span>
+                            )}
                         </button>
                     ))}
                 </div>
 
-                {/* Chart Section */}
-                <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 mb-6">
-                    <h2 className="text-xl font-semibold text-white mb-4">
-                        {activeTab === 'activity' && '📊 Activity Trends (Last 30 Days)'}
-                        {activeTab === 'sleep' && '💤 Sleep Patterns (Last 30 Days)'}
-                        {activeTab === 'body' && '📈 Body Composition Trends'}
-                        {activeTab === 'stress' && '🧘 Heart Rate by Hour of Day'}
-                    </h2>
+                {/* Trends Tab - Full Width */}
+                {activeTab === 'trends' && (
+                    <LongTermTrends
+                        activity={activity}
+                        sleep={sleep}
+                        body={body}
+                        activityAnalytics={activityAnalytics}
+                        sleepAnalytics={sleepAnalytics}
+                        bodyAnalytics={bodyAnalytics}
+                        stressAnalytics={stressAnalytics}
+                    />
+                )}
 
-                    {activeTab === 'activity' && <ActivityChart data={activity} showCalories />}
-                    {activeTab === 'sleep' && <SleepChart data={sleep} />}
-                    {activeTab === 'body' && <BodyChart data={body} />}
-                    {activeTab === 'stress' && <StressChart analytics={stressAnalytics} />}
-                </div>
+                {/* Other Tabs - Chart + Details */}
+                {activeTab !== 'trends' && (
+                    <>
+                        {/* Chart Section */}
+                        <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 mb-6">
+                            <h2 className="text-xl font-semibold text-white mb-4">
+                                {activeTab === 'activity' && '📊 Activity Trends (Last 30 Days)'}
+                                {activeTab === 'sleep' && '💤 Sleep Patterns (Last 30 Days)'}
+                                {activeTab === 'body' && '📈 Body Composition Trends'}
+                                {activeTab === 'stress' && '🧘 Heart Rate by Hour of Day'}
+                            </h2>
 
-                {/* Expert Details Section */}
-                {showDetails && (
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
-                            <h3 className="text-lg font-semibold text-purple-400 px-4">Expert Analytics</h3>
-                            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+                            {activeTab === 'activity' && <ActivityChart data={activity} showCalories />}
+                            {activeTab === 'sleep' && <SleepChart data={sleep} />}
+                            {activeTab === 'body' && <BodyChart data={body} />}
+                            {activeTab === 'stress' && <StressChart analytics={stressAnalytics} />}
                         </div>
 
-                        {activeTab === 'activity' && <ActivityDetails analytics={activityAnalytics} />}
-                        {activeTab === 'sleep' && <SleepDetails analytics={sleepAnalytics} />}
-                        {activeTab === 'body' && <BodyDetails analytics={bodyAnalytics} />}
-                        {activeTab === 'stress' && <StressDetails analytics={stressAnalytics} />}
-                    </div>
+                        {/* Expert Details Section */}
+                        {showDetails && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+                                    <h3 className="text-lg font-semibold text-purple-400 px-4">Expert Analytics</h3>
+                                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+                                </div>
+
+                                {activeTab === 'activity' && <ActivityDetails analytics={activityAnalytics} />}
+                                {activeTab === 'sleep' && <SleepDetails analytics={sleepAnalytics} />}
+                                {activeTab === 'body' && <BodyDetails analytics={bodyAnalytics} />}
+                                {activeTab === 'stress' && <StressDetails analytics={stressAnalytics} />}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 

@@ -1,12 +1,20 @@
-# Zepp Health Analytics 🏃‍♂️💤📊🧘
+# Zepp Health Analytics 🏃‍♂️💤📊🧘📈
 
-A comprehensive health analytics dashboard for visualizing Zepp app exports. Built with Next.js 15, featuring expert-level statistics, stress analysis, and AI-powered insights.
+A comprehensive health analytics dashboard for visualizing Zepp app exports. Built with Next.js 15, featuring expert-level statistics, long-term trends, stress analysis, and AI-powered insights.
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=nextdotjs)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-cyan?style=flat-square&logo=tailwindcss)
 
 ## ✨ Features
+
+### 📈 Long-Term Trends *(NEW)*
+- **Quarterly Aggregations** - View data grouped by calendar quarters
+- **Yearly Overview** - Compare stats across years at a glance
+- **Interval Selection** - Toggle between 3 months, 6 months, 1 year, or all time
+- **All-Time Totals** - Cumulative steps (M), distance (km), calories, HR readings
+- **Best Year Highlights** - Auto-detect best activity and sleep years
+- **Weight Journey** - First to current weight with total change
 
 ### 📈 Expert Analytics
 - **Percentile Distribution** - P25, P50, P75, P90, P95 for benchmarking
@@ -96,8 +104,8 @@ zepp-viewer/
 │   ├── components/
 │   │   ├── charts/         # Recharts visualizations
 │   │   ├── details/        # Expert analytics panels
-│   │   ├── ui/             # Reusable UI components
 │   │   ├── Dashboard.tsx   # Main dashboard
+│   │   ├── LongTermTrends.tsx # Long-interval analysis
 │   │   └── AIChatPanel.tsx # AI chat interface
 │   ├── lib/
 │   │   ├── analytics.ts    # Activity, Sleep, Body stats
